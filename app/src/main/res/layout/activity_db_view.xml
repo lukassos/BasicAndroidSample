@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
     android:padding="16dp">
 
@@ -38,6 +39,15 @@
             android:layout_below="@id/db.ciara"
             android:text="Sem pride DB content "
             android:layout_marginTop="5dp"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabDeleteAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_delete_24dp"
+            android:layout_alignParentRight="true"
+            app:fabSize="mini"
+            />
     </RelativeLayout>
 
 
