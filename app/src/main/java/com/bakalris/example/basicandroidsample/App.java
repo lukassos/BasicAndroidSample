@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 
+import com.orm.SugarApp;
+
 import java.util.Random;
 import java.util.UUID;
 
@@ -14,7 +16,7 @@ import java.util.UUID;
  * All rights reserved.
  */
 
-public class App extends Application {
+public class App extends SugarApp {
 
     private static final String LOGTAG = "App";
 
