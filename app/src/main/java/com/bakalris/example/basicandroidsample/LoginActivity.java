@@ -3,6 +3,7 @@ package com.bakalris.example.basicandroidsample;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -28,6 +29,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +187,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(email, password, this);
             mAuthTask.execute((Void) null);
         }
     }
@@ -294,50 +296,63 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, Kofola> {
 
         private final String mEmail;
         private final String mPassword;
+        private final Context mActivityContext;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, Context context) {
             mEmail = email;
             mPassword = password;
+            mActivityContext = context;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected void onPreExecute() {
+            Toast.makeText(mActivityContext, "Wasa kofola bude ulozena ! PL ", Toast.LENGTH_LONG).show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Kofola doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                return false;
+                return null;
             }
-
+            int objem = 0;
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                    objem = 1;
                 }
             }
 
+            Kofola kofolaJeLenJedna = new Kofola(mEmail+":"+mPassword, objem  );
+            kofolaJeLenJedna.save();
+
             // TODO: register the new account here.
-            return true;
+            return kofolaJeLenJedna;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Kofola success) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-                finish();
+            if (((Kofola)success).getObjem() > 0) {
+                /// uncomment for kill activity after this line
+                // finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
+            Toast.makeText(mActivityContext, "DB saved Kofola : "+success.toString(), Toast.LENGTH_LONG).show();
         }
 
         @Override

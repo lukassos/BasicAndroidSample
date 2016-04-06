@@ -1,5 +1,7 @@
 package com.bakalris.example.basicandroidsample;
 
+import com.orm.SugarRecord;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +12,15 @@ import org.json.JSONObject;
  * All rights reserved
  */
 
-public class Kofola {
+public class Kofola extends SugarRecord {
+
+    /**
+     * Tutorial for SUgar ORM
+     *
+     * http://satyan.github.io/sugar/getting-started.html
+     */
+
+
     public static final String NAZOV = "nazov";
     public static final String OBJEM = "objem";
 
