@@ -26,6 +26,11 @@ public class Kofola extends SugarRecord {
 
     private String nazov;
     private int objem;
+
+    public static Kofola getInstance() {
+        return mInstance;
+    }
+
     private static Kofola mInstance;
 
     public Kofola() {

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                         textView.append("\n wof wof");
                     }
                 });
-
+                showAllKofolas();
             }
         });
         final Activity a = this;
@@ -80,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(textView.getText() + "\n Prefs Val : " + readPrefsVal);
 
 
+    }
+
+    private void showAllKofolas() {
+        Intent intent = new Intent(this, DbViewActivity.class);
+        startActivity(intent);
     }
 
     @Override
