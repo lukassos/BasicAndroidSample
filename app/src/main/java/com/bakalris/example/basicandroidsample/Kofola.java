@@ -18,7 +18,7 @@ public class Kofola extends SugarRecord {
 
     /**
      * Tutorial for SUgar ORM
-     *
+     * <p/>
      * http://satyan.github.io/sugar/getting-started.html
      */
     private static final String TAG = "Kofola";
@@ -39,16 +39,21 @@ public class Kofola extends SugarRecord {
         /// log tag on BG
         Log.e(TAG, "Kofola: HALOOOOOOOOOO !!! ");
 
-        if(mInstance == null){
+        verifySingleton();
+
+    }
+
+    private void verifySingleton() {
+        if (mInstance == null) {
             mInstance = this;
         }
-
     }
 
     public Kofola(
             String nazov,
             int objem
-            ) {
+    ) {
+
         this.nazov = nazov;
         this.objem = objem;
     }
