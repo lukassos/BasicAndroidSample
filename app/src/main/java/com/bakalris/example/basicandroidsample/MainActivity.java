@@ -2,6 +2,7 @@ package com.bakalris.example.basicandroidsample;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,18 +24,36 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final TextView textView = (TextView) findViewById(R.id.hello);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                int SLEEP_INTERVAL_MS = 5000;
+                Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                         public void run() {
+                             fab.setVisibility(View.VISIBLE);
+                         }
+                    }, SLEEP_INTERVAL_MS);
+
+                fab.setVisibility(View.GONE);
+                Handler handler2 = new Handler();
+                    handler2.post(new Runnable() {
+                         public void run() {
+                              textView.append("\n wof wof");
+                         }
+                    });
+
             }
         });
         String appName = getResources().getString(R.string.app_name);
         mInt = getResources().getInteger(R.integer.vyska);
 
-        TextView textView = (TextView) findViewById(R.id.hello);
+
         textView.setText(textView.getText() + " " + mInt);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
@@ -43,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         textView.setText(textView.getText() + "\n Prefs Val : " + readPrefsVal);
-
 
     }
 
