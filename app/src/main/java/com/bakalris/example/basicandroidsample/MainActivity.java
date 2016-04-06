@@ -39,10 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         prefs.edit().putInt("somethingSmall", mInt).commit();
-        String readPrefsVal = prefs.getString("somethingSmall", "DEFAULT");
+        int readPrefsVal = prefs.getInt("somethingSmall", 0);
 
 
-        textView.setText(textView.getText() + "\n" + readPrefsVal);
+        textView.setText(textView.getText() + "\n Prefs Val : " + readPrefsVal);
 
 
     }
