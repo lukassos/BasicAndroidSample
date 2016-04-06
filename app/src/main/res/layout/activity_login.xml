@@ -16,15 +16,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/login_progress"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="gone">
 
 
         <ProgressBar
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:visibility="visible" />
+            android:layout_marginBottom="8dp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <LinearLayout
