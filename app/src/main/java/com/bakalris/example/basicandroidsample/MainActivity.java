@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    public int anInt = 0;
+    public int mInt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         String appName = getResources().getString(R.string.app_name);
-        anInt = getResources().getInteger(R.integer.vyska);
+        mInt = getResources().getInteger(R.integer.vyska);
 
         TextView textView = (TextView) findViewById(R.id.hello);
-        textView.setText(textView.getText() + " " + anInt);
+        textView.setText(textView.getText() + " " + mInt);
 
 
     }
