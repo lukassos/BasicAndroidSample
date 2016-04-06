@@ -1,5 +1,7 @@
 package com.bakalris.example.basicandroidsample;
 
+import android.util.Log;
+
 import com.orm.SugarRecord;
 
 import org.json.JSONException;
@@ -19,7 +21,7 @@ public class Kofola extends SugarRecord {
      *
      * http://satyan.github.io/sugar/getting-started.html
      */
-
+    private static final String TAG = "Kofola";
 
     public static final String NAZOV = "nazov";
     public static final String OBJEM = "objem";
@@ -34,6 +36,9 @@ public class Kofola extends SugarRecord {
     private static Kofola mInstance;
 
     public Kofola() {
+        /// log tag on BG
+        Log.e(TAG, "Kofola: HALOOOOOOOOOO !!! ");
+
         if(mInstance == null){
             mInstance = this;
         }

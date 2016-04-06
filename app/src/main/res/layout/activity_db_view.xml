@@ -19,7 +19,7 @@
             android:id="@+id/db.nadpis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:style="@android:style/TextAppearance.Large"
+            android:textAppearance="@android:style/TextAppearance.Large"
             android:text="Stylizovany nadpis " />
 
         <FrameLayout
