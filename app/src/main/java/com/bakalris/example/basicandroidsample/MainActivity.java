@@ -1,5 +1,7 @@
 package com.bakalris.example.basicandroidsample;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,24 +34,38 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
                 int SLEEP_INTERVAL_MS = 5000;
                 Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                         public void run() {
-                             fab.setVisibility(View.VISIBLE);
-                         }
-                    }, SLEEP_INTERVAL_MS);
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        fab.setVisibility(View.VISIBLE);
+                    }
+                }, SLEEP_INTERVAL_MS);
 
                 fab.setVisibility(View.GONE);
                 Handler handler2 = new Handler();
-                    handler2.post(new Runnable() {
-                         public void run() {
-                              textView.append("\n wof wof");
-                         }
-                    });
+                handler2.post(new Runnable() {
+                    public void run() {
+                        textView.append("\n wof wof");
+                    }
+                });
 
             }
         });
+        final Activity a = this;
+        FloatingActionButton fabLogin = (FloatingActionButton) findViewById(R.id.fabLogin);
+        fabLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(a, LoginActivity.class);
+                //intent.putExtra(.BUNDLE_DATA, mItemResult.getUser_login());
+                startActivity(intent);
+            }
+        });
+
+
+
         String appName = getResources().getString(R.string.app_name);
         mInt = getResources().getInteger(R.integer.vyska);
 
@@ -62,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         textView.setText(textView.getText() + "\n Prefs Val : " + readPrefsVal);
+
 
     }
 
