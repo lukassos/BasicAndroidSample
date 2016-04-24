@@ -38,6 +38,8 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.login.LoginException;
+
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "MainActivity";
     public int mInt = 0;
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         final TextView textView = (TextView) findViewById(R.id.hello);
 
         // reference activity for embeded function calls
-        final Activity a =  this;
+        final Activity a = this;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -297,35 +299,50 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        Log.e(TAG, "showProgress: showing ");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e(TAG, "run: 1");
 
-            mCameraLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-            mCameraLayout.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                    int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
                     mCameraLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+                    mCameraLayout.animate().setDuration(shortAnimTime).alpha(
+                            show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mCameraLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+                        }
+                    });
 
-            mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressLayout.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
                     mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
+                    mProgressLayout.animate().setDuration(shortAnimTime).alpha(
+                            show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+                        }
+                    });
 
-            // TODO : enable the camera preview again
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-            mCameraLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-            // TODO : disable the camera preview to lighten the cpu usage
-        }
+                    // TODO : enable the camera preview again
+                } else {
+                    // The ViewPropertyAnimator APIs are not available, so simply show
+                    // and hide the relevant UI components.
+                    mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+                    mCameraLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+                    // TODO : disable the camera preview to lighten the cpu usage
+                }
+
+                showProgress(true);
+                Log.e(TAG, "run: 2");
+            }
+
+        });
+        Log.e(TAG, "showProgress: showing end ");
     }
 
     @Override
@@ -343,7 +360,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         // We should allocate all globally used matrices in onCameraViewStarted.
         // This may prevent out of memory leakage.
         // (OpenCV for android has its bugs so don`t let your hopes too high)
-
 
 
         mRgba = new Mat(height, width, CvType.CV_8UC4);
@@ -385,15 +401,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private Mat littleBitOfPreprocessing(CameraBridgeViewBase.CvCameraViewFrame inputFrame, int mode) {
         // in here just scramble the egs and paint the beauty
 
-
-
+        OperationTimer  timer = new OperationTimer(1500);
 
         switch (mode) {
             case NORMAL:
                 mRgba = inputFrame.rgba();
                 break;
             case GAUS_7_GRAY:
+                checkTimer(timer);
                 Imgproc.GaussianBlur(inputFrame.gray(), mGray, new Size(7, 7), 0.3);
+                checkTimer(timer);
                 Imgproc.cvtColor(mGray, mRgba, Imgproc.COLOR_GRAY2RGBA, 4);
                 break;
             case CANNY:
@@ -405,9 +422,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 List<MatOfPoint> contours = new ArrayList<>();
                 Mat hierarchy = new Mat();
                 Imgproc.Canny(mGray, mIntermediateMat, 70, 223);
+                checkTimer(timer);
                 Imgproc.findContours(mIntermediateMat, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+                checkTimer(timer);
                 hierarchy.release();
                 clearRGBAtoBlack();
+
+                checkTimer(timer);
+
                 Imgproc.drawContours(mRgba, contours, -1, new Scalar(App.getRandom().nextInt(255), App.getRandom().nextInt(255), App.getRandom().nextInt(255))); // -1 for drawing all of them
                 break;
             case HOUGH_LINES:
@@ -418,6 +440,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 //                Imgproc.Sobel(inputFrame.gray(), mGray, inputFrame.gray().depth(), 0, 1, 3, 1, 0);
 //                Imgproc.threshold(mGray, mGray, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
                 Imgproc.Canny(inputFrame.gray(), mIntermediateMat, 80, 100);
+                checkTimer(timer);
 
                 Mat lines = new Mat();
                 int threshold = 100;
@@ -426,22 +449,23 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                 Imgproc.HoughLinesP(mIntermediateMat, lines, 1, Math.PI / 180, threshold, minLineSize, lineGap);
 
+                checkTimer(timer);
 
-                List <Mat> toBeMerged = new ArrayList<>();
+                List<Mat> toBeMerged = new ArrayList<>();
                 toBeMerged.add(mIntermediateMat);
                 toBeMerged.add(mIntermediateMat);
                 toBeMerged.add(mIntermediateMat);
                 toBeMerged.add(Mat.ones(mFrameSize, GRAY_TYPE));
                 Core.merge(toBeMerged, mRgba);
+                checkTimer(timer);
 
                 // check the lines in output - dimensions does not copy cpp implementation
-                Log.e(TAG, "littleBitOfPreprocessing: lines.toString() :"+ lines.toString());
-                Log.e(TAG, "littleBitOfPreprocessing: lines.rows() :"+ lines.rows());
-                Log.e(TAG, "littleBitOfPreprocessing: lines.cols() :"+ lines.cols());
+                Log.e(TAG, "littleBitOfPreprocessing: lines.toString() :" + lines.toString());
+                Log.e(TAG, "littleBitOfPreprocessing: lines.rows() :" + lines.rows());
+                Log.e(TAG, "littleBitOfPreprocessing: lines.cols() :" + lines.cols());
 
                 int maxDrawnLines = 20;
-                for (int row = 0; row < lines.rows() && row < maxDrawnLines; row++)
-                {
+                for (int row = 0; row < lines.rows() && row < maxDrawnLines; row++) {
                     double[] vec = lines.get(row, 0);
 
                     double x1 = vec[0],
@@ -450,9 +474,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             y2 = vec[3];
                     Point start = new Point(x1, y1);
                     Point end = new Point(x2, y2);
-                    Log.e(TAG, "littleBitOfPreprocessing: line ["+row+"] : "+start+" "+end );
+                    Log.e(TAG, "littleBitOfPreprocessing: line [" + row + "] : " + start + " " + end);
                     Imgproc.line(mRgba, start, end, new Scalar(0, 255, 0), 3);
                 }
+
+                checkTimer(timer);
+
                 break;
             case FIND_LETTERS:
                 // TODO : detect letters with cascade filter
@@ -475,12 +502,34 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         // Otherwise our screen freeze until processing is done, which is bad UI pattern.
         //  Thus something like contours, exhausting search etc. is not suitable here.
 
+        Log.e(TAG, "littleBitOfPreprocessing: non showing ");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e(TAG, "run: 1");
+                showProgress(false);
+                Log.e(TAG, "run: 2");
+            }
+        });
+        Log.e(TAG, "littleBitOfPreprocessing: non showing 2");
+
+        showProgress(false);
 
         return mRgba;
     }
 
+    private void checkTimer(OperationTimer timer) {
+        try{
+            timer.checkTimer();
+        }catch (OperationTimer.ErrorTimesUp errorTimesUp){
+            showProgress(true);
+        }
+    }
+
+
+
     private void clearRGBAtoBlack() {
-        mRgba = Mat.zeros(mFrameSize,COLOR_TYPE);
+        mRgba = Mat.zeros(mFrameSize, COLOR_TYPE);
     }
 
     /*
